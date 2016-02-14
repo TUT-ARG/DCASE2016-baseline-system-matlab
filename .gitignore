@@ -1,0 +1,14 @@
+# OSX / *nix default autosave extension
+*.m~
+
+# Windows default autosave extension
+*.asv
+
+# Compiled MEX binaries (all platforms)
+*.mex*
+
+# Simulink Code Generation
+slprj/
+
+data/
+system/
