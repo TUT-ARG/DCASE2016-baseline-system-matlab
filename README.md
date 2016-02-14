@@ -37,7 +37,7 @@ The baseline systems for task 1 and 3 shares the same basic approach: [MFCC](htt
 
 The dataset handling is hidden behind dataset access class, which should help DCASE challenge participants implementing their own systems. 
 
-The main baseline implementation for the DCASE2016 tasks 1 and 3 is the [Python implementation](https://github.com/TUT-ARG/DCASE2016-baseline-system-python). The Matlab implantation replicates the code structure of the main baseline to allow easy switching between platforms. The implementations are not intended to produce exactly the same results. The differences between implementations are due to the used libraries for MFCC extraction (RASTAMAT vs Librosa) and for GMM modeling (VOICEBOX vs scikit-learn). 
+The main baseline implementation for the DCASE2016 tasks 1 and 3 is the [Python implementation](https://github.com/TUT-ARG/DCASE2016-baseline-system-python). The Matlab implementation replicates the code structure of the main baseline to allow easy switching between platforms. The implementations are not intended to produce exactly the same results. The differences between implementations are due to the used libraries for MFCC extraction (RASTAMAT vs Librosa) and for GMM modeling (VOICEBOX vs scikit-learn). 
 
 #### 1.1. Acoustic scene classification
 
