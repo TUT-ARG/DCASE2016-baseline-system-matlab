@@ -218,7 +218,7 @@ Detailed description of metrics can be found from [DCASE2016 website](http://www
 |-----------------------|-------------|-------------|-------------|-------------|-------------|
 | Home                  | 0.99        | 0.16        | 0.73        | 0.10        | 16.2 %      |
 | Residential area      | 0.86        | 0.13        | 0.61        | 0.12        | 34.6 %      |
-| **Average**           |  **0.89 **  |             |             |             | **25.4 %**  |
+| **Average**           |  **0.93 **  |             |             |             | **25.4 %**  |
 
 *Segment based metrics - class-wise*
 
