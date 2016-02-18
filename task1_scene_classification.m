@@ -766,6 +766,7 @@ function do_system_evaluation(dataset, result_path, dataset_evaluation_mode)
 
     results_fold = [];
     progress(1,'Collecting results',0,'');
+
     for fold=dataset.folds(dataset_evaluation_mode)
         dcase2016_scene_metric_fold = DCASE2016_SceneClassification_Metrics(dataset.scene_labels());
         results = [];
@@ -803,7 +804,6 @@ function do_system_evaluation(dataset, result_path, dataset_evaluation_mode)
     if dataset.fold_count() > 1
         separator = [separator,'  +'];
         for fold=dataset.folds(dataset_evaluation_mode)
-            %fold_labels += " {:8s} |".format('Fold'+str(fold))
             fold_labels = [fold_labels, sprintf(' %-8s |', ['fold',num2str(fold)])];
             separator = [separator,'==========+'];
         end
