@@ -92,7 +92,7 @@ classdef DCASE2016_SceneClassification_Metrics < handle
             % nothing
             % 
 
-            obj.accuracies_per_class = [obj.accuracies_per_class, obj.accuracies(system_output, annotated_groundtruth, obj.class_list)];            
+            obj.accuracies_per_class = [obj.accuracies_per_class, obj.accuracies(annotated_groundtruth, system_output, obj.class_list)];
 
             Nsys = zeros(length(obj.class_list),1);
             Nref = zeros(length(obj.class_list),1);
@@ -137,8 +137,7 @@ classdef DCASE2016_SceneClassification_Metrics < handle
             % -------
             % results : struct
             %     Results struct  
-            % 
-
+            %
             accuracies = mean(obj.accuracies_per_class,2);
 
             class_wise_accuracies = containers.Map();
