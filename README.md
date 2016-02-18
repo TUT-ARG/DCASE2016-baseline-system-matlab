@@ -154,22 +154,22 @@ The scoring of acoustic scene classification will be based on classification acc
 
 | Scene                | Accuracy     |
 |----------------------|--------------|
-| Beach                |  87.4 %      |
-| Bus                  |  78.5 %      |
-| Cafe/restaurant      |  77.5 %      |
-| Car                  |  95.8 %      |
-| City center          |  78.6 %      |
-| Forest path          |  91.0 %      |
-| Grocery store        |  79.9 %      |
-| Home                 |  74.5 %      |
-| Library              |  74.6 %      |
-| Metro station        |  87.3 %      |
-| Office               | 100.0 %      |
-| Park                 |  65.8 %      |
-| Residential area     |  38.0 %      |
-| Train                |  67.7 %      |
-| Tram                 |  68.7 %      |
-| **Overall accuracy** |  **77.0 %**  |
+| Beach                |  71.9 %      |
+| Bus                  |  62.0 %      |
+| Cafe/restaurant      |  83.9 %      |
+| Car                  |  75.7 %      |
+| City center          |  85.6 %      |
+| Forest path          |  65.9 %      |
+| Grocery store        |  76.6 %      |
+| Home                 |  79.4 %      |
+| Library              |  61.3 %      |
+| Metro station        |  85.2 %      |
+| Office               |  96.1 %      |
+| Park                 |  24.4 %      |
+| Residential area     |  75.4 %      |
+| Train                |  36.7 %      |
+| Tram                 |  89.5 %      |
+| **Overall accuracy** |  **71.3 %**  |
 
 ## Task 3 - Real life audio sound event detection
 
