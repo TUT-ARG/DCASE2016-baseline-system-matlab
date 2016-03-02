@@ -81,11 +81,11 @@ In this mode, the system is trained and evaluated with the development dataset. 
 
 To run the system in this mode:
 
-    >> python task1_scene_classification();
+    >> task1_scene_classification();
 
 or 
 
-    >> python task1_scene_classification('development');
+    >> task1_scene_classification('development');
 
 
 #### Challenge mode
@@ -94,7 +94,7 @@ In this mode, the system is trained with the provided development dataset and th
 
 To run the system in this mode:
 
-    >> python task1_scene_classification('challenge');
+    >> task1_scene_classification('challenge');
 
 4. System blocks
 ================

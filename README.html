@@ -1072,15 +1072,15 @@ body .markdown-body
 <h4 id="development-mode"><a name="user-content-development-mode" href="#development-mode" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Development mode</h4>
 <p>In this mode, the system is trained and evaluated with the development dataset. This is the default operating mode. </p>
 <p>To run the system in this mode:</p>
-<pre><code>&gt;&gt; python task1_scene_classification();
+<pre><code>&gt;&gt; task1_scene_classification();
 </code></pre>
 <p>or </p>
-<pre><code>&gt;&gt; python task1_scene_classification('development');
+<pre><code>&gt;&gt; task1_scene_classification('development');
 </code></pre>
 <h4 id="challenge-mode"><a name="user-content-challenge-mode" href="#challenge-mode" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Challenge mode</h4>
 <p>In this mode, the system is trained with the provided development dataset and the evaluation dataset is run through the developed system. Output files are generated in correct format for the challenge submission. The system ouput is saved in the path specified with the parameter: <code>path-&gt;challenge_results</code>.</p>
 <p>To run the system in this mode:</p>
-<pre><code>&gt;&gt; python task1_scene_classification('challenge');
+<pre><code>&gt;&gt; task1_scene_classification('challenge');
 </code></pre>
 <h1 id="4-system-blocks"><a name="user-content-4-system-blocks" href="#4-system-blocks" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>4. System blocks</h1>
 <p>The system implements following blocks:</p>
