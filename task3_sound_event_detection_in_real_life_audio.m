@@ -14,6 +14,7 @@ function task3_real_life_audio_sound_event_detection(varargin)
     %
     %
     
+    download_external_libraries % Download external libraries
     add_paths;   % Add file paths
     
     rng(123456); % let's make randomization predictable
