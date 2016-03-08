@@ -22,9 +22,9 @@ function event_result = postprocess_event_segments(event_segments, varargin)
 
     % Parse the optional arguments
     [minimum_event_length, ...
-     minimum_event_cap, unused] = process_options(varargin, ...
+     minimum_event_gap, unused] = process_options(varargin, ...
         'minimum_event_length', 0.1, ...
-        'minimum_event_cap', 0.1);    
+        'minimum_event_gap', 0.1);    
 
     % 1. remove short events
     event_results_1 = [];
@@ -35,21 +35,21 @@ function event_result = postprocess_event_segments(event_segments, varargin)
     end
     
     if(size(event_results_1,1) > 0)
-        % 2. remove small caps between events
+        % 2. remove small gaps between events
         event_results_2 = [];
         
         % load first event into event buffer
         buffered_event_onset = event_results_1(1,1);
         buffered_event_offset = event_results_1(1,2);        
         for i=2:size(event_results_1,1)
-            if event_results_1(i,1) - buffered_event_offset > minimum_event_cap
-                % The cap between current event and the buffered is bigger than minimum event cap,
+            if event_results_1(i,1) - buffered_event_offset > minimum_event_gap
+                % The gap between current event and the buffered is bigger than minimum event gap,
                 % store event, and replace buffered event
                 event_results_2 = [event_results_2; [buffered_event_onset, buffered_event_offset]];
                 buffered_event_onset = event_results_1(i,1);
                 buffered_event_offset = event_results_1(i,2);
             else
-                % The cap between current event and the buffered is smalle than minimum event cap,
+                % The gap between current event and the buffered is smalle than minimum event gap,
                 % extend the buffered event until the current offset
                 buffered_event_offset = event_results_1(i,2);
             end

@@ -77,4 +77,4 @@ detector:
   decision_threshold: 120.0
   smoothing_window_length: 1.0
   minimum_event_length: 0.1
-  minimum_event_cap: 0.1
+  minimum_event_gap: 0.1
