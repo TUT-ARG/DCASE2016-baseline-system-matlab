@@ -28,7 +28,7 @@ function result = contiguous_regions(activity_array)
     
     if activity_array(end)
         % If the last element of activity_array is True, add the length of the array
-        change_indices = [change_indices; activity_array];
+        change_indices = [change_indices; length(activity_array)];
     end
     
     % Reshape the result into two columns
