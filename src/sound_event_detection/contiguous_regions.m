@@ -13,6 +13,8 @@ function result = contiguous_regions(activity_array)
     %     Onset and offset indices pairs in matrix
 	% 
     
+    activity_array = activity_array(:);
+
     % Find the changes in the activity_array
     change_indices = find(diff(activity_array));
 
