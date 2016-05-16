@@ -356,7 +356,7 @@ classdef DatasetBase
             %
             
             if isempty(obj.meta_data)
-                obj.meta_data = []; %containers.Map();
+                obj.meta_data = [];
 
                 meta_id = 1;
                 if exist(obj.meta_file,'file'),
