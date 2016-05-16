@@ -67,7 +67,7 @@ classdef EventDetectionMetrics < handle
                 pos = find(strcmp(obj.class_list,event.event_label));  
                 
                 onset = floor(event.event_onset * 1 / time_resolution)+1;
-                offset = ceil(event.event_offset * 1 / time_resolution)+1;
+                offset = ceil(event.event_offset * 1 / time_resolution);
                 
                 event_roll(onset:offset, pos) = 1;
             end        
