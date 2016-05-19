@@ -51,7 +51,7 @@ function task1_scene_classification(varargin)
     else
         error(['Unknown development dataset [', params.general.development_dataset, ']']);
     end
-    
+
     % Fetch data over internet and setup the data
     % ==================================================
     if params.flow.initialize        
@@ -112,9 +112,11 @@ function task1_scene_classification(varargin)
                            params.path.models,...
                            params.path.feature_normalizers,...
                            params.path.features,...
+                           params.features,...
                            params.classifier.parameters,...                           
                            dataset_evaluation_mode,...
-                           params.classifier.method,...                           
+                           params.classifier.method,...
+                           params.classifier.audio_error_handling.clean_data,...
                            params.general.overwrite);
 
         foot();
@@ -134,6 +136,7 @@ function task1_scene_classification(varargin)
                               params.features,...
                               dataset_evaluation_mode,...
                               params.classifier.method,...
+                              params.recognizer.audio_error_handling.clean_data,...
                               params.general.overwrite);
             foot();
         end
@@ -173,6 +176,7 @@ function task1_scene_classification(varargin)
                               params.features,...
                               dataset_evaluation_mode,...
                               params.classifier.method,...
+                              params.recognizer.audio_error_handling.clean_data,...
                               1);
             foot();
 
@@ -205,12 +209,20 @@ function params = process_parameters(params)
     params.classifier.parameters = getfield(params.classifier_parameters,params.classifier.method);
 
     params.features.hash = get_parameter_hash(params.features);
-    params.classifier.hash = get_parameter_hash(params.classifier);
+    % Let's keep hashes backwards compatible after added parameters.
+    % Only if error handling is used, they are included in the hash.
+    classifier_params = params.classifier;
+    if ~classifier_params.audio_error_handling.clean_data
+        classifier_params = rmfield(classifier_params,'audio_error_handling');
+    end
+    params.classifier.hash = get_parameter_hash(classifier_params);
+
+    params.recognizer.hash = get_parameter_hash(params.recognizer);
 
     params.path.features = fullfile(params.path.base, params.path.features,params.features.hash);
     params.path.feature_normalizers = fullfile(params.path.base, params.path.feature_normalizers,params.features.hash);
     params.path.models = fullfile(params.path.base, params.path.models,params.features.hash, params.classifier.hash);
-    params.path.results = fullfile(params.path.base, params.path.results, params.features.hash, params.classifier.hash);
+    params.path.results = fullfile(params.path.base, params.path.results, params.features.hash, params.classifier.hash, params.recognizer.hash);
 end
     
 function filename = get_feature_filename(audio_file, path, extension)
@@ -461,7 +473,7 @@ function do_feature_normalization(dataset, feature_normalizer_path, feature_path
     disp('  ');
 end
 
-function do_system_training(dataset, model_path, feature_normalizer_path, feature_path, classifier_params, dataset_evaluation_mode, classifier_method, overwrite)
+function do_system_training(dataset, model_path, feature_normalizer_path, feature_path, feature_params, classifier_params, dataset_evaluation_mode, classifier_method, clean_audio_errors, overwrite)
     % System training
     %
     % model container format (struct):
@@ -483,6 +495,9 @@ function do_system_training(dataset, model_path, feature_normalizer_path, featur
     % feature_path : str
     %     path where the features are saved.
     %
+    % feature_params : struct
+    %     parameter struct
+    %
     % classifier_params : struct
     %     parameter struct
     %
@@ -491,6 +506,9 @@ function do_system_training(dataset, model_path, feature_normalizer_path, featur
     %
     % classifier_method : str ['gmm']
     %     classifier method, currently only GMM supported
+    %
+    % clean_audio_errors : bool
+    %      Remove audio errors from the training data
     %
     % overwrite : bool
     %     overwrite existing models
@@ -513,6 +531,7 @@ function do_system_training(dataset, model_path, feature_normalizer_path, featur
 
     % Check that target path exists, create if not
     check_path(model_path);
+
     progress(1, 'Collecting data', 0, '');
     for fold=dataset.folds(dataset_evaluation_mode)        
         current_model_file = get_model_filename(fold, model_path);
@@ -544,9 +563,28 @@ function do_system_training(dataset, model_path, feature_normalizer_path, featur
                     error(['Features not found [', item.file, ']']);
                 end
                 
-                % Normalize features
+                % Scale features
                 feature_data = model_container.normalizer.normalize(feature_data);
-                
+
+                % Audio error removal
+                if (clean_audio_errors)
+                    current_errors = dataset.file_error_meta(item.file);
+                    if ~isempty(current_errors)
+                        removal_mask = true(size(feature_data,2),1);
+                        for error_event_id=1:size(current_errors,2)
+                            error_event = current_errors(error_event_id);
+                            onset_frame = floor(error_event.event_onset / feature_params.hop_length_seconds) + 1;
+                            offset_frame = ceil(error_event.event_offset / feature_params.hop_length_seconds) + 1;
+
+                            if offset_frame > size(feature_data,2)
+                                offset_frame = size(feature_data,2);
+                            end
+                            removal_mask(onset_frame:offset_frame) = 0;
+                        end
+                        feature_data = feature_data(:,removal_mask);
+                    end
+                end
+
                 % Store features per class label
                 if ~isKey(data,item.scene_label)
                     data(item.scene_label) = feature_data;
@@ -577,7 +615,7 @@ function do_system_training(dataset, model_path, feature_normalizer_path, featur
     disp('  ');
 end
 
-function do_system_testing(dataset, feature_path, result_path, model_path, feature_params, dataset_evaluation_mode, classifier_method, overwrite)
+function do_system_testing(dataset, feature_path, result_path, model_path, feature_params, dataset_evaluation_mode, classifier_method, clean_audio_errors, overwrite)
     % System testing.
     % 
     % If extracted features are not found from disk, they are extracted but not saved.
@@ -604,7 +642,10 @@ function do_system_testing(dataset, feature_path, result_path, model_path, featu
     % 
     % classifier_method : str ['gmm']
     %     classifier method, currently only GMM supported
-    % 
+    %
+    % clean_audio_errors : bool
+    %     Remove audio errors from the training data
+    %
     % overwrite : bool
     %     overwrite existing models
     % 
@@ -673,6 +714,24 @@ function do_system_testing(dataset, feature_path, result_path, model_path, featu
                 % Scale features
                 feature_data = model_container.normalizer.normalize(feature_data);
 
+                % Audio error removal
+                if (clean_audio_errors)
+                    current_errors = dataset.file_error_meta(item.file);
+                    if ~isempty(current_errors)
+                        removal_mask = true(size(feature_data,2),1);
+                        for error_event_id=1:size(current_errors,2)
+                            error_event = current_errors(error_event_id);
+                            onset_frame = floor(error_event.event_onset / feature_params.hop_length_seconds) + 1;
+                            offset_frame = ceil(error_event.event_offset / feature_params.hop_length_seconds) + 1;
+
+                            if offset_frame > size(feature_data,2)
+                                offset_frame = size(feature_data,2);
+                            end
+                            removal_mask(onset_frame:offset_frame) = 0;
+                        end
+                        feature_data = feature_data(:,removal_mask);
+                    end
+                end
 
                 % Do classification for the block
                 if strcmp(classifier_method, 'gmm')
