@@ -11,12 +11,15 @@ classdef DatasetBase
         authors = '';
         evaluation_setup_folder = 'evaluation_setup';
         meta_filename = 'meta.txt';
+        error_meta_filename = 'error.txt';
         filelisthash_filename = 'filelist.hash';
         local_path = '';
         meta_file = '';
+        error_meta_file = '';
         evaluation_setup_path = '';
         files = [];
         meta_data = [];
+        error_meta_data = [];
         evaluation_data_train = {};
         evaluation_data_test = {};
         audio_extensions = {'wav', 'flac'};
@@ -403,6 +406,74 @@ classdef DatasetBase
                     file_meta = [file_meta; current_item];
                 end
             end        
+        end
+
+        function error_meta = error_meta(obj)
+            % Get audio error meta data for dataset. If not already read from disk, data is read and returned.
+            %
+            % meta data struct format:
+            %  struct('file','string',...
+            %         'event_onset','float',...
+            %         'event_offset','float',...
+            %         'event_label','string',...
+            %         'id','int');
+            %
+            % Parameters
+            % ----------
+            % Nothing
+            %
+            % Returns
+            % -------
+            % meta_data : cell array with meta data structs
+            %     Array containing meta data as struct.
+            %
+
+            if isempty(obj.error_meta_data)
+                obj.error_meta_data = [];
+
+                error_meta_id = 1;
+                if exist(obj.error_meta_file,'file'),
+                    fid = fopen(obj.error_meta_file,'r');
+                    C = textscan(fid, '%s%f%f%s', 'delimiter','\t');
+                    fclose(fid);
+
+                    for file_id=1:length(C{1})
+                        obj.error_meta_data = [obj.error_meta_data, struct('file',strtrim(C{1}{file_id}),...
+                                                               'event_onset',C{2}(file_id),...
+                                                               'event_offset',C{3}(file_id),...
+                                                               'event_label',strtrim(C{4}{file_id}),...
+                                                               'id',error_meta_id)];
+
+                        error_meta_id=error_meta_id+1;
+                    end
+                end
+            end
+            error_meta = obj.error_meta_data;
+        end
+
+        function file_error_meta = file_error_meta(obj, file)
+            % Error meta data for given file
+            %
+            % Parameters
+            % ----------
+            % file : str
+            %     File name
+            %
+            % Returns
+            % -------
+            % list : array of meta structs
+            %    Array containing all error meta data related to given file.
+            %
+
+            file = obj.absolute_to_relative(file);
+            error_meta = obj.error_meta();
+            file_error_meta = [];
+            for file_id=1:length(error_meta)
+                current_item = error_meta(file_id);
+                if(strcmp(current_item.file,file))
+                    file_error_meta = [file_error_meta; current_item];
+                end
+            end
         end
 
         function folds = folds(obj, mode)
