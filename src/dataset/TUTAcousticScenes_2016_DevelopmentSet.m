@@ -29,6 +29,7 @@ classdef TUTAcousticScenes_2016_DevelopmentSet < DatasetBase
             end
 
             obj.meta_file = fullfile(obj.local_path, obj.meta_filename);
+            obj.error_meta_file = fullfile(obj.local_path, obj.error_meta_filename);
             obj.evaluation_setup_path = fullfile(obj.local_path, obj.evaluation_setup_folder);
 
             obj.package_list = [
@@ -40,7 +41,10 @@ classdef TUTAcousticScenes_2016_DevelopmentSet < DatasetBase
                        'local_audio_path',fullfile(obj.local_path, 'audio')),
                 struct('remote_package','https://zenodo.org/record/45739/files/TUT-acoustic-scenes-2016-development.meta.zip',...
                        'local_package',fullfile(obj.local_path, 'TUT-acoustic-scenes-2016-development.meta.zip'),...
-                       'local_audio_path',fullfile(obj.local_path, 'audio')),                       
+                       'local_audio_path',fullfile(obj.local_path, 'audio')),
+                struct('remote_package','https://zenodo.org/record/45739/files/TUT-acoustic-scenes-2016-development.error.zip',...
+                       'local_package',fullfile(obj.local_path, 'TUT-acoustic-scenes-2016-development.error.zip'),...
+                       'local_audio_path',fullfile(obj.local_path, 'audio')),
                 struct('remote_package','https://zenodo.org/record/45739/files/TUT-acoustic-scenes-2016-development.audio.1.zip',...
                        'local_package',fullfile(obj.local_path, 'TUT-acoustic-scenes-2016-development.audio.1.zip'),...
                        'local_audio_path',fullfile(obj.local_path, 'audio')),                                              
