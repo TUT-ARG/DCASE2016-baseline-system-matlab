@@ -334,7 +334,11 @@ function filename = get_result_filename(fold, path, extension)
     if nargin < 3
         extension = 'txt';
     end
-    filename = fullfile(path, ['results_fold',num2str(fold), '.', extension]);
+    if fold == 0
+        filename = fullfile(path, ['results','.', extension]);
+    else
+        filename = fullfile(path, ['results_fold',num2str(fold), '.', extension]);
+    end
 end
 
 function do_feature_extraction(files, dataset, feature_path, params, overwrite)
