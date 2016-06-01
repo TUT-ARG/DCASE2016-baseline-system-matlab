@@ -219,7 +219,7 @@ Detailed description of metrics can be found from [DCASE2016 website](http://www
 |-----------------------|-------------|-------------|-------------|-------------|-------------|
 | Home                  | 1.01        | 0.13        | 0.77        | 0.10        | 14.2 %      |
 | Residential area      | 0.88        | 0.11        | 0.66        | 0.11        | 31.5 %      |
-| **Average**           |  **0.94 **  |             |             |             | **22.8 %**  |
+| **Average**           | **0.94**    |             |             |             | **22.8 %**  |
 
 *Segment based metrics - class-wise*
 
@@ -227,7 +227,7 @@ Detailed description of metrics can be found from [DCASE2016 website](http://www
 |-----------------------|-------------|-------------|
 | Home                  | 1.16        | 10.2 %      |
 | Residential area      | 1.16        | 17.3 %      | 
-| **Average**           |  **1.16 **  | **13.8 %**  |
+| **Average**           | **1.16**    | **13.8 %**  |
 
 *Event based metrics - overall*
 
@@ -235,7 +235,7 @@ Detailed description of metrics can be found from [DCASE2016 website](http://www
 |-----------------------|-------------|-------------|
 | Home                  | 1.44        | 1.8 %       |
 | Residential area      | 2.33        | 1.6 %       |
-| **Average**           |  **1.84 **  | **1.5 %**   |
+| **Average**           | **1.84**    | **1.5 %**   |
 
 *Event based metrics - class-wise*
 
@@ -243,7 +243,7 @@ Detailed description of metrics can be found from [DCASE2016 website](http://www
 |-----------------------|-------------|-------------|
 | Home                  | 1.48        | 1.9         |
 | Residential area      | 2.11        | 0.8 %       |
-| **Average**           |  **1.80 **  | **1.4 %**   |
+| **Average**           | **1.80**    | **1.4 %**   |
 
 
 6. System parameters
