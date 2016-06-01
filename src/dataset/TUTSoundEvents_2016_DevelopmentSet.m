@@ -134,9 +134,9 @@ classdef TUTSoundEvents_2016_DevelopmentSet < DatasetBase
                     else
                         meta = obj.meta();
                         data = [];
-                        for k=meta.keys()
-                            current_item = meta(char(k));
-                            if strcmp(current_item,scene_label_)
+                        for file_id=1:length(meta)  
+                            current_item = meta(file_id);                            
+                            if strcmp(current_item.scene_label,scene_label_)
                                 data = [data; struct('file',current_item.file,...
                                                      'scene_label',current_item.scene_label,...
                                                      'event_onset',current_item.event_onset,...
@@ -145,7 +145,7 @@ classdef TUTSoundEvents_2016_DevelopmentSet < DatasetBase
                                                      'event_type',current_item.event_type)];
                             end
                         end
-                        obj.evaluation_data_train{1} = data;
+                        obj.evaluation_data_train{1}(scene_label_) = data;
                     end
                 end
 
@@ -181,15 +181,14 @@ classdef TUTSoundEvents_2016_DevelopmentSet < DatasetBase
                         C = textscan(fid, '%s%s', 'delimiter','\t');
                         fclose(fid);
                         for file_id=1:length(C{1})
-                            obj.evaluation_data_test{fold+1}(scene_label_) = [obj.evaluation_data_test{fold+1}(scene_label_); struct('file',C{1}{file_id},...
-                                                                                                                                     'scene_label',C{2}{file_id})];
+                            obj.evaluation_data_test{fold+1}(scene_label_) = [obj.evaluation_data_test{fold+1}(scene_label_); struct('file',C{1}{file_id},'scene_label',C{2}{file_id})];
                         end
                     else
                         meta = obj.meta();
                         data = [];
-                        for k=meta.keys()
-                            current_item = meta(char(k));
-                            if strcmp(current_item,scene_label_)
+                        for file_id=1:length(meta)  
+                            current_item = meta(file_id);  
+                            if strcmp(current_item.scene_label,scene_label_)
                                 data = [data; struct('file',current_item.file,...
                                                      'scene_label',current_item.scene_label,...
                                                      'event_onset',current_item.event_onset,...
