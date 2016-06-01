@@ -12,7 +12,7 @@ classdef DatasetBase
         evaluation_setup_folder = 'evaluation_setup';
         meta_filename = 'meta.txt';
         error_meta_filename = 'error.txt';
-        filelisthash_filename = 'filelist.hash';
+        filelisthash_filename = 'filelist.matlab.hash';
         local_path = '';
         meta_file = '';
         error_meta_file = '';
@@ -211,16 +211,26 @@ classdef DatasetBase
             % filelist: list
             %     File list
             %
-            
+
+            [~, ~, hash_ext] = fileparts(obj.filelisthash_filename);
+
             dir_data = dir(path);                                       % Get the data for the current directory
             dir_index = [dir_data.isdir];                               % Find the index for directories
-            file_list = {dir_data(~dir_index).name}';                   % Get a list of the files
+            exclude_files_index = dir_index;
+            for i=1:size(dir_data,1)
+                [~,~,ext] = fileparts(dir_data(i).name);
+                if strcmp(ext,hash_ext)
+                    exclude_files_index(i) = 1;
+                end
+            end            
+            file_list = {dir_data(~exclude_files_index).name}';                   % Get a list of the files
+
             if ~isempty(file_list)
                 file_list = cellfun(@(x) fullfile(obj.local_path,x),file_list,'UniformOutput',false); % Prepend path to files
             end
             sub_directories = {dir_data(dir_index).name};               % Get a list of the subdirectories
 
-            valid_index = ~ismember(sub_directories,{'.','..'});        % Find index of subdirectories that are not '.' or '..'
+            valid_index = ~ismember(sub_directories,{'.','..'});        % Find index of subdirectories that are not '.' or '..'            
             if sum(valid_index)
                 for i = find(valid_index)                               % Loop over valid subdirectories
                     next_directory = fullfile(path,sub_directories{i}); % Get the subdirectory path
@@ -325,9 +335,11 @@ classdef DatasetBase
                         l = dir(path);
                         p = strrep(path,[obj.local_path,filesep],'');
                         for file_id = 1:length(l)
-                            [pathstr,name,ext] = fileparts(l(file_id).name);
-                            if(sum(strcmp(ext(2:end),obj.audio_extensions) > 0))
-                               obj.files = [obj.files; {GetFullPath(fullfile(path,l(file_id).name))}]; 
+                            [pathstr,name,ext] = fileparts(l(file_id).name);                            
+                            if(sum(strcmp(ext(2:end),obj.audio_extensions) > 0))                               
+                                if sum(strcmp(obj.files, GetFullPath(fullfile(path,l(file_id).name)))) == 0
+                                    obj.files = [obj.files; {GetFullPath(fullfile(path,l(file_id).name))}]; 
+                                end
                             end
                         end
                     end
