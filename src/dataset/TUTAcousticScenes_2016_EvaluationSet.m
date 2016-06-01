@@ -18,7 +18,7 @@ classdef TUTAcousticScenes_2016_EvaluationSet < DatasetBase
             obj.audio_type = 'Natural';
             obj.recording_device_model = 'Roland Edirol R-09';
             obj.microphone_model = 'Soundman OKM II Klassik/studio A3 electret microphone';
-            obj.evaluation_folds = 4;
+            obj.evaluation_folds = 1;
 
             obj.local_path = fullfile(data_path, obj.name);
 
@@ -31,6 +31,21 @@ classdef TUTAcousticScenes_2016_EvaluationSet < DatasetBase
 
             obj.package_list = [
                 struct('remote_package',[],'local_package',[],'local_audio_path',fullfile(obj.local_path, 'audio')),
+                struct('remote_package','http://www.cs.tut.fi/sgn/arg/dcase2016/challenge_data/TUT-acoustic-scenes-2016-evaluation.doc.zip',...
+                       'local_package',fullfile(obj.local_path, 'TUT-acoustic-scenes-2016-evaluation.doc.zip'),...
+                       'local_audio_path',fullfile(obj.local_path, 'audio')),
+                struct('remote_package','http://www.cs.tut.fi/sgn/arg/dcase2016/challenge_data/TUT-acoustic-scenes-2016-evaluation.audio.1.zip',...
+                       'local_package',fullfile(obj.local_path, 'TUT-acoustic-scenes-2016-evaluation.audio.1.zip'),...
+                       'local_audio_path',fullfile(obj.local_path, 'audio')),
+                struct('remote_package','http://www.cs.tut.fi/sgn/arg/dcase2016/challenge_data/TUT-acoustic-scenes-2016-evaluation.audio.2.zip',...
+                       'local_package',fullfile(obj.local_path, 'TUT-acoustic-scenes-2016-evaluation.audio.2.zip'),...
+                       'local_audio_path',fullfile(obj.local_path, 'audio')),
+                struct('remote_package','http://www.cs.tut.fi/sgn/arg/dcase2016/challenge_data/TUT-acoustic-scenes-2016-evaluation.audio.3.zip',...
+                       'local_package',fullfile(obj.local_path, 'TUT-acoustic-scenes-2016-evaluation.audio.3.zip'),...
+                       'local_audio_path',fullfile(obj.local_path, 'audio')),           
+                struct('remote_package','http://www.cs.tut.fi/sgn/arg/dcase2016/challenge_data/TUT-acoustic-scenes-2016-evaluation.meta.zip',...
+                       'local_package',fullfile(obj.local_path, 'TUT-acoustic-scenes-2016-evaluation.meta.zip'),...
+                       'local_audio_path',fullfile(obj.local_path, 'audio')),                                                    
             ];
         end
 
@@ -68,6 +83,42 @@ classdef TUTAcousticScenes_2016_EvaluationSet < DatasetBase
 
                 foot();
             end
+        end
+
+        function files = test(obj, fold)
+            % List of testing items.
+            % 
+            % Parameters
+            % ----------
+            % fold : int > 0 [scalar]
+            %     Fold id, if zero all meta data is returned.
+            %
+            % Returns
+            % -------
+            % list : array of structs
+            %     Array containing all meta data assigned to testing set for given fold.            
+            %
+            
+            if length(obj.evaluation_data_test) < (fold+1) || ~isempty(obj.evaluation_data_test{fold+1})
+                if fold > 0
+                    obj.evaluation_data_test{fold+1} = [];
+                    fid = fopen(fullfile(obj.evaluation_setup_path, ['fold',num2str(fold),'_test.txt']), 'rt'); 
+                    C = textscan(fid, '%s%s', 'delimiter','\t');
+                    fclose(fid);
+                    for file_id=1:length(C{1})
+                        obj.evaluation_data_test{fold+1} = [obj.evaluation_data_test{fold+1}; struct('file',strtrim(C{1}{file_id}))];
+                    end
+                else                    
+                    files = obj.audio_files();
+                    data = [];
+                    for file_id=1:length(files)  
+                        current_item = obj.absolute_to_relative(files(file_id));
+                        data = [data; struct('file',current_item)];
+                    end
+                    obj.evaluation_data_test{1} = data;
+                end
+            end
+            files = obj.evaluation_data_test{fold+1};
         end
     end
 end
