@@ -33,6 +33,15 @@ classdef TUTSoundEvents_2016_EvaluationSet < DatasetBase
                 struct('remote_package',[],'local_package',[],'local_audio_path',fullfile(obj.local_path, 'audio')),
                 struct('remote_package',[],'local_package',[],'local_audio_path',fullfile(obj.local_path, 'audio','residential_area')),
                 struct('remote_package',[],'local_package',[],'local_audio_path',fullfile(obj.local_path, 'audio','home')),
+                struct('remote_package','http://www.cs.tut.fi/sgn/arg/dcase2016/challenge_data/TUT-sound-events-2016-evaluation.doc.zip',...
+                       'local_package',fullfile(obj.local_path, 'TUT-sound-events-2016-evaluation.doc.zip'),...
+                       'local_audio_path',fullfile(obj.local_path, 'audio')),    
+                struct('remote_package','http://www.cs.tut.fi/sgn/arg/dcase2016/challenge_data/TUT-sound-events-2016-evaluation.meta.zip',...
+                       'local_package',fullfile(obj.local_path, 'TUT-sound-events-2016-evaluation.meta.zip'),...
+                       'local_audio_path',fullfile(obj.local_path, 'audio')),                    
+                struct('remote_package','http://www.cs.tut.fi/sgn/arg/dcase2016/challenge_data/TUT-sound-events-2016-evaluation.audio.zip',...
+                       'local_package',fullfile(obj.local_path, 'TUT-sound-events-2016-evaluation.audio.zip'),...
+                       'local_audio_path',fullfile(obj.local_path, 'audio')),                            
             ];
         end
 
@@ -62,5 +71,70 @@ classdef TUTSoundEvents_2016_EvaluationSet < DatasetBase
                 foot();
             end
         end
+
+        function labels = scene_labels(obj)
+            % Cell array of unique scene labels in the meta data.
+            % 
+            % Parameters
+            % ----------
+            % Nothing
+            % 
+            % Returns
+            % -------
+            % labels : cell array
+            %    Cell array of scene labels in alphabetical order.
+            %
+            
+            labels = [{'home','residential_area'}];
+            labels = sort(unique(labels));
+        end
+
+        function files = test(obj, fold, varargin)
+            [scene_label, unused] = process_options(varargin,'scene_label',false);            
+            if length(obj.evaluation_data_test) < (fold+1) || ~isempty(obj.evaluation_data_test{fold+1})
+                obj.evaluation_data_test{fold+1} = containers.Map();
+                scene_list = obj.scene_labels();
+                for scene_id = 1:length(scene_list)
+                    scene_label_ = scene_list{scene_id};
+
+                    if fold > 0
+                        obj.evaluation_data_test{fold+1}(scene_label_) = [];
+                        fid = fopen(fullfile(obj.evaluation_setup_path, [scene_label_,'_fold',num2str(fold),'_test.txt']), 'rt');
+                        C = textscan(fid, '%s%s', 'delimiter','\t');
+                        fclose(fid);
+                        for file_id=1:length(C{1})
+                            obj.evaluation_data_test{fold+1}(scene_label_) = [obj.evaluation_data_test{fold+1}(scene_label_); struct('file',C{1}{file_id},'scene_label',C{2}{file_id})];
+                        end
+                    else       
+                        fid = fopen(fullfile(obj.evaluation_setup_path, [scene_label_,'_test.txt']), 'rt');
+                        C = textscan(fid, '%s%s', 'delimiter','\t');
+                        fclose(fid);
+
+                        data = [];
+                        for file_id=1:length(C{1})
+                            current_item_label = C{2}(file_id);
+                            if strcmp(current_item_label,scene_label_)
+                                data = [data; struct('file',C{1}(file_id),'scene_label',C{2}(file_id))];
+                            end
+                        end
+                        obj.evaluation_data_test{1}(scene_label_) = data;
+                    end
+                end
+            end
+
+            if scene_label
+                files = obj.evaluation_data_test{fold+1}(scene_label);
+            else
+                files = [];
+                for scene_id = 1:length(scene_list)
+                    scene_label_ = scene_list{scene_id};
+                    list = obj.evaluation_data_test{fold+1}(scene_label_);
+
+                    for i=1:length(list)
+                        files = [files; list(i)];
+                    end
+                end
+            end
+        end         
     end
 end
