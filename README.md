@@ -229,21 +229,21 @@ Detailed description of metrics can be found from [DCASE2016 website](http://www
 | Residential area      | 1.16        | 17.3 %      | 
 | **Average**           | **1.16**    | **13.8 %**  |
 
-*Event based metrics - overall*
+*Event based metrics (onset-only) - overall*
 
 | Scene                 | ER          | F1          | 
 |-----------------------|-------------|-------------|
-| Home                  | 1.44        | 1.8 %       |
-| Residential area      | 2.33        | 1.6 %       |
-| **Average**           | **1.84**    | **1.5 %**   |
+| Home                  | 1.38        | 3.9 %       |
+| Residential area      | 2.11        | 4.3 %       |
+| **Average**           | **1.74**    | **4.1 %**   |
 
-*Event based metrics - class-wise*
+*Event based metrics (onset-only) - class-wise*
 
 | Scene                 | ER          | F1          | 
 |-----------------------|-------------|-------------|
-| Home                  | 1.48        | 1.9         |
-| Residential area      | 2.11        | 0.8 %       |
-| **Average**           | **1.80**    | **1.4 %**   |
+| Home                  | 1.46        | 3.9         |
+| Residential area      | 2.05        | 3.3 %       |
+| **Average**           | **1.75**    | **3.6 %**   |
 
 
 6. System parameters
