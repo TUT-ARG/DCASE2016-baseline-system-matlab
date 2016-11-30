@@ -51,8 +51,9 @@ classdef DCASE2016_EventDetection_EventBasedMetrics < EventDetectionMetrics
     %
     
     properties
-        time_resolution = 1.0;
         t_collar = 0.2;
+        use_onset_condition = 1;
+        use_offset_condition = 1;
         
         overall = struct('Nref',0,...
                          'Nsys',0,...
@@ -82,8 +83,22 @@ classdef DCASE2016_EventDetection_EventBasedMetrics < EventDetectionMetrics
             %     Time collar for event onset and offset condition
             %     (Default value = 0.2)
             %
+            % use_onset_condition : bool
+            %     Use onset condition when finding correctly detected events
+            %     (Default value = True)
+            %
+            % use_offset_condition : bool
+            %     Use offset condition when finding correctly detected events
+            %     (Default value = True)
+            %
 
-            [obj.time_resolution,obj.t_collar,unused] = process_options(varargin,'time_resolution',1.0,'t_collar',0.2);
+            [obj.t_collar,...
+             obj.use_onset_condition,...
+             obj.use_offset_condition,...
+             unused] = process_options(varargin,...
+                                       't_collar',0.2,...
+                                       'use_onset_condition',1,...
+                                       'use_offset_condition',1);
             obj.class_list = class_list;            
             
             for class_id=1:length(class_list)
@@ -126,16 +141,26 @@ classdef DCASE2016_EventDetection_EventBasedMetrics < EventDetectionMetrics
             % Number of correctly transcribed events, onset within a t_collar range
             for j=1:length(annotated_groundtruth)
                 for i=1:length(system_output)
-                    label_condition = strcmp(annotated_groundtruth(j).event_label, system_output(i).event_label);
-                    onset_condition = obj.onset_condition(annotated_groundtruth(j), system_output(i), 't_collar', obj.t_collar);
+                    if ~sys_correct(i)
+                        label_condition = strcmp(annotated_groundtruth(j).event_label, system_output(i).event_label);
+                        if(obj.use_onset_condition)
+                            onset_condition = obj.onset_condition(annotated_groundtruth(j), system_output(i), 't_collar', obj.t_collar);
+                        else
+                            onset_condition = 1;
+                        end
 
-                    % Offset within a t_collar range or within 20% of ground-truth event's duration
-                    offset_condition = obj.offset_condition(annotated_groundtruth(j), system_output(i), 't_collar', obj.t_collar);
+                        % Offset within a t_collar range or within 20% of ground-truth event's duration
+                        if(obj.use_offset_condition)
+                            offset_condition = obj.offset_condition(annotated_groundtruth(j), system_output(i), 't_collar', obj.t_collar);
+                        else
+                            offset_condition = 1;
+                        end
 
-                    if(label_condition && onset_condition && offset_condition)
-                        ref_correct(j) = 1;
-                        sys_correct(i) = 1;
-                        break
+                        if(label_condition && onset_condition && offset_condition)
+                            ref_correct(j) = 1;
+                            sys_correct(i) = 1;
+                            break
+                        end
                     end
                 end
             end
@@ -146,16 +171,28 @@ classdef DCASE2016_EventDetection_EventBasedMetrics < EventDetectionMetrics
             ref_leftover = find(~ref_correct)';
 
             Nsubs = 0;
+            sys_counted = zeros(Nsys, 1);
             for j=ref_leftover
                 for i=sys_leftover
-                    onset_condition = obj.onset_condition(annotated_groundtruth(j), system_output(i), 't_collar', obj.t_collar);
+                    if ~sys_counted(i)
+                        if(obj.use_onset_condition)
+                            onset_condition = obj.onset_condition(annotated_groundtruth(j), system_output(i), 't_collar', obj.t_collar);
+                        else
+                            onset_condition = 1;
+                        end
 
-                    % Offset within a t_collar range or within 20% of ground-truth event's duration
-                    offset_condition = obj.offset_condition(annotated_groundtruth(j), system_output(i), 't_collar', obj.t_collar);
+                        % Offset within a t_collar range or within 20% of ground-truth event's duration
+                        if(obj.use_offset_condition)
+                            offset_condition = obj.offset_condition(annotated_groundtruth(j), system_output(i), 't_collar', obj.t_collar);
+                        else
+                            offset_condition = 1;
+                        end
 
-                    if(onset_condition && offset_condition)
-                        Nsubs = Nsubs + 1;
-                        break;
+                        if(onset_condition && offset_condition)
+                            sys_counted(i) = 1;
+                            Nsubs = Nsubs + 1;
+                            break;
+                        end
                     end
                 end
             end
@@ -192,17 +229,28 @@ classdef DCASE2016_EventDetection_EventBasedMetrics < EventDetectionMetrics
                     end
                 end
 
+                sys_counted = zeros(length(system_output),1);
                 for j=1:length(annotated_groundtruth)
-                    for i=1:length(system_output)
-                        if strcmp(annotated_groundtruth(j).event_label,class_label) && strcmp(system_output(i).event_label, class_label)
-                            onset_condition = obj.onset_condition(annotated_groundtruth(j), system_output(i), 't_collar', obj.t_collar);
+                    if strcmp(annotated_groundtruth(j).event_label,class_label)
+                        for i=1:length(system_output)
+                            if strcmp(system_output(i).event_label, class_label) && ~sys_counted(i)
+                                if(obj.use_onset_condition)
+                                    onset_condition = obj.onset_condition(annotated_groundtruth(j), system_output(i), 't_collar', obj.t_collar);
+                                else
+                                    onset_condition =  1;
+                                end
+                                % Offset within a +/-100 ms range or within 20% of ground-truth event's duration
+                                if(obj.use_offset_condition)
+                                    offset_condition = obj.offset_condition(annotated_groundtruth(j), system_output(i), 't_collar', obj.t_collar);
+                                else
+                                    offset_condition = 1;
+                                end
 
-                            % Offset within a +/-100 ms range or within 20% of ground-truth event's duration
-                            offset_condition = obj.offset_condition(annotated_groundtruth(j), system_output(i), 't_collar', obj.t_collar);
-
-                            if(onset_condition && offset_condition)
-                                Ntp = Ntp + 1;
-                                break
+                                if(onset_condition && offset_condition)
+                                    sys_counted(i) = 1;
+                                    Ntp = Ntp + 1;
+                                    break
+                                end
                             end
                         end
                     end
