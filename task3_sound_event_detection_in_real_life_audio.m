@@ -829,13 +829,17 @@ function do_system_evaluation(dataset, dataset_evaluation_mode, result_path)
         scene_label = scene_labels{scene_id};
 
         dcase2016_segment_based_metric = DCASE2016_EventDetection_SegmentBasedMetrics(dataset.event_labels('scene_label',scene_label));
-        dcase2016_event_based_metric = DCASE2016_EventDetection_EventBasedMetrics(dataset.event_labels('scene_label',scene_label));
+        dcase2016_event_based_metric = DCASE2016_EventDetection_EventBasedMetrics(dataset.event_labels('scene_label',scene_label),'use_onset_condition',1,'use_offset_condition',0);
 
         for fold=dataset.folds(dataset_evaluation_mode)                    
             result_filename = get_result_filename(fold, scene_label, result_path);
             if exist(result_filename,'file')
-                fid = fopen(result_filename,'r');
-                C = textscan(fid, '%s%f%f%s', 'delimiter','\t');
+                [fid,error_message] = fopen(result_filename,'r');
+                if isempty(error_message)
+                    C = textscan(fid, '%s%f%f%s', 'delimiter','\t');
+                else
+                    error(['Error while opening file [',result_filename,'], error [',error_message,']']);              
+                end                
                 fclose(fid);             
             else
                 error(['Result file not found [',result_filename,']']);          
