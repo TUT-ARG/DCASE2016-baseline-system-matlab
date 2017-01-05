@@ -145,17 +145,23 @@ classdef DatasetBase
                         entry_name = char(entry.getName);
                         
                         % Trick to omit first level folder
-                        pos = strfind(entry_name, [obj.name,filesep]);
-                        
+                        pos = strfind(entry_name, [obj.name,'/']);
+                            
                         if (~isempty(pos))
-                            entry_name = strrep(entry_name,[obj.name,filesep],'');
-                        end
+                            entry_name = strrep(entry_name,[obj.name,'/'],'');                            
+                        end                      
                         target_filename = fullfile(obj.local_path,entry_name);
-                        
+                                                
                         if(~exist(target_filename,'file'))
                             target_file = java.io.File(target_filename);
                             parent_directory = java.io.File(target_file.getParent);
-                            parent_directory.mkdirs;
+                            parent_directory.mkdirs();
+                            if(~parent_directory.isDirectory())
+                                mkdir(char(parent_directory.toString))
+                                if(~exist(char(parent_directory.toString)))
+                                    error('Could not create folder [%s]',char(parent_directory.toString));
+                                end
+                            end
                             try
                                 target_file_output_stream = java.io.FileOutputStream(target_file);
                             catch
@@ -176,8 +182,6 @@ classdef DatasetBase
                         file_count = file_count + 1;
                     end
                     zip_file.close();
-
-                    %unzip(file.local_package,obj.local_path);
                 end
             end
 
