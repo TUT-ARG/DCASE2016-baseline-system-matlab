@@ -26,7 +26,7 @@ Table of Contents
 
 1. Introduction
 =================================
-This document describes the Python implementation of the baseline systems for the [Detection and Classification of Acoustic Scenes and Events 2016 (DCASE2016) challenge](http://www.cs.tut.fi/sgn/arg/dcase2016/) **[tasks 1](#11-acoustic-scene-classification)** and **[task 3](#12-sound-event-detection)**. The challenge consists of four tasks:
+This document describes the Matlab implementation of the baseline systems for the [Detection and Classification of Acoustic Scenes and Events 2016 (DCASE2016) challenge](http://www.cs.tut.fi/sgn/arg/dcase2016/) **[tasks 1](#11-acoustic-scene-classification)** and **[task 3](#12-sound-event-detection)**. The challenge consists of four tasks:
 
 1. [Acoustic scene classification](http://www.cs.tut.fi/sgn/arg/dcase2016/task-acoustic-scene-classification)
 2. [Sound event detection in synthetic audio](http://www.cs.tut.fi/sgn/arg/dcase2016/task-sound-event-detection-in-synthetic-audio)
